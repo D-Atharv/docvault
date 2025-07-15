@@ -1,6 +1,7 @@
 "use client"; // Add this directive to enable state management
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Search,
   SlidersHorizontal,
@@ -20,7 +21,7 @@ export default function Header() {
         transition-all hover:border-blue-500/40 hover:shadow-md hover:shadow-blue-800/30 rounded-r-xl relative z-20"
     >
       <div className="flex items-center">
-        <img
+        <Image
           src="https://www.google.com/images/branding/product/2x/drive_2020q4_48dp.png"
           alt="Drive logo"
           className="h-10 w-10"

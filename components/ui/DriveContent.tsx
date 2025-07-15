@@ -19,7 +19,7 @@ export default function DriveContent() {
   const ITEMS_PER_PAGE = 15;
 
   const sortedItems = useMemo(() => {
-    let sortableItems = [...driveItems];
+    const sortableItems = [...driveItems];
     if (sortConfig.key) {
       sortableItems.sort((a, b) => {
         if (a[sortConfig.key]! < b[sortConfig.key]!) {

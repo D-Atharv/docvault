@@ -33,7 +33,7 @@ export default function Pagination({
         <ChevronLeft size={16} />
       </button>
 
-      {pages.map((page, idx) => (
+      {pages.map((page) => (
         <button
           key={page}
           onClick={() => onPageChange(page)}
