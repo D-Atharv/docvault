@@ -10,7 +10,7 @@ import {
   UserCircle,
   AppWindow,
 } from "lucide-react";
-import ProfileCard from "./ProfileCard"; // Import the new component
+import ProfileCard from "../ProfileCard"; // Import the new component
 
 export default function Header() {
   const [isProfileCardOpen, setIsProfileCardOpen] = useState(false);

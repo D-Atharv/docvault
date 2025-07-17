@@ -1,9 +1,7 @@
 // components/ui/filter_dropdown/FilterOptionsList.tsx
 "use client";
 import {
-  ChevronDown,
   ChevronRight,
-  Calendar,
   Folder,
   FileText,
   FileSpreadsheet,
@@ -15,7 +13,6 @@ import {
   PencilRuler,
   Link,
   LayoutList,
-  Users,
   LucideIcon,
 } from "lucide-react";
 import { FileType, ModifiedFilterType, FilterCategory } from "@/types";

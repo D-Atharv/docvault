@@ -45,7 +45,6 @@ export default function FilterDropdown({
   onSelect,
   customDateRange,
   onApplyCustomDateRange,
-  onClearAll, // This handler is for the top-level "Clear all" button in DriveContent.
 }: // For custom date panel's "Clear all", we use its specific handler.
 FilterDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);

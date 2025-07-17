@@ -1,5 +1,8 @@
-//server component
-import { DriveItem, FileType } from "@/types"; // Import FileType
+// components/ui/file_grid/FileCard.tsx
+"use client"; // This makes it a Client Component
+
+import React from "react"; // Explicitly import React
+import { DriveItem, FileType } from "@/types"; // Import types
 import {
   Folder,
   FileText,
@@ -12,9 +15,9 @@ import {
   PencilRuler, // For Drawings
   LayoutList, // For Sites
   Link, // For Shortcuts
-} from "lucide-react";
+} from "lucide-react"; // Import all necessary icons here
 
-// Helper to get the correct icon based on FileType
+// Helper to get the correct icon based on FileType (moved here)
 const getFileIcon = (type: FileType) => {
   switch (type) {
     case "Folders":
@@ -29,7 +32,7 @@ const getFileIcon = (type: FileType) => {
     case "Videos":
       return FileVideo;
     case "Forms":
-      return FileText; // Using generic FileText for forms
+      return FileText;
     case "Photos & images":
       return ImageIcon;
     case "PDFs":
@@ -49,14 +52,28 @@ const getFileIcon = (type: FileType) => {
   }
 };
 
-const FileCard = ({ item }: { item: DriveItem }) => {
+interface FileCardProps {
+  item: DriveItem;
+  // Add an onClick handler here if the card itself is clickable
+  // onClick?: (item: DriveItem) => void;
+}
+
+export default function FileCard({ item }: FileCardProps) {
+  // Removed onClick for now, but keep in mind for future
   const Icon = getFileIcon(item.type);
-  // Display the type directly, or "FOLDER" if it's a folder type
   const itemTypeDisplay =
     item.type === "Folders" ? "FOLDER" : item.type.toUpperCase();
 
+  // If the card is clickable, you would add an onClick here:
+  // const handleClick = () => {
+  //   onClick?.(item);
+  // };
+
   return (
-    <div className="group cursor-pointer rounded-xl border border-slate-500/30 bg-slate-400/10 backdrop-blur-md text-gray-100 shadow-md transition-all hover:border-blue-500/40 hover:shadow-2xl hover:shadow-blue-800/30">
+    <div
+      // onClick={handleClick} // Add this if you implement onClick prop
+      className="group cursor-pointer rounded-xl border border-slate-500/30 bg-slate-400/10 backdrop-blur-md text-gray-100 shadow-md transition-all hover:border-blue-500/40 hover:shadow-2xl hover:hover:shadow-blue-800/30"
+    >
       {/* Top section with item type */}
       <div className="p-4">
         <p className="font-mono text-sm text-slate-300">{itemTypeDisplay}</p>
@@ -79,20 +96,6 @@ const FileCard = ({ item }: { item: DriveItem }) => {
           {item.fileSize && <p>📁 {item.fileSize}</p>}
         </div>
       </div>
-    </div>
-  );
-};
-
-type FileGridViewProps = {
-  items: DriveItem[];
-};
-
-export default function FileGridView({ items }: FileGridViewProps) {
-  return (
-    <div className="mt-6 grid gap-6 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
-      {items.map((item) => (
-        <FileCard key={item.id} item={item} />
-      ))}
     </div>
   );
 }

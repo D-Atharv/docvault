@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { driveItems } from "@/lib/mock-data";
-import FileTable from "./FileTable";
-import FileGridView from "./FileGridView";
 import { ChevronDown, List, LayoutGrid, Info } from "lucide-react";
-import Pagination from "./Pagination";
+import Pagination from "../layout/Pagination";
 import { useDriveFilters } from "@/hooks/drive_content/useDriveFilters";
 import { useDriveSorting } from "@/hooks/drive_content/useDriveSorting";
 import { useDrivePagination } from "@/hooks/drive_content/useDrivePagination";
-import { FileType, ModifiedFilterType, CustomDateRange } from "@/types"; 
+import { FileType, ModifiedFilterType, CustomDateRange } from "@/types";
 import FilterDropdown from "./filter_dropdown/FilterDropDown";
+import FileTable from "./file_table/FileTable";
+import FileGridView from "./file_grid/FileGridView";
 
 export default function DriveContent() {
   const ITEMS_PER_PAGE = 15;
@@ -19,20 +19,20 @@ export default function DriveContent() {
   const {
     selectedType,
     selectedModified,
-    customDateRange, 
+    customDateRange,
     fileTypeOptions,
     modifiedFilterOptions,
     filteredItems,
     handleTypeChange,
     handleModifiedChange,
-    setCustomDateRange, 
+    setCustomDateRange,
   } = useDriveFilters(driveItems);
 
-  // 2. Use Sorting Hook 
+  // 2. Use Sorting Hook
   const { sortedItems, sortConfig, requestSort } =
     useDriveSorting(filteredItems);
 
-  // 3. Use Pagination Hook 
+  // 3. Use Pagination Hook
   const {
     currentPage,
     paginatedItems,
