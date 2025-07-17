@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Drive UI Clone",
+  title: "DocVault",
   description: "A clone of the Google Drive UI with Next.js and Tailwind CSS",
 };
 

@@ -1,7 +1,7 @@
 import DriveContent from "@/components/ui/DriveContent";
 import Header from "@/components/ui/Header";
 import RightSidebar from "@/components/ui/RightSidebar";
-import Sidebar from "@/components/ui/Sidebar";
+import Sidebar from "@/components/ui/sidebar/Sidebar";
 
 export default function Home() {
   return (

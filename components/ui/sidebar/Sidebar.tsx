@@ -1,4 +1,5 @@
-"use client";
+// components/ui/Sidebar.tsx
+"use client"; // Remains a Client Component due to useState and direct interaction
 
 import { useState } from "react";
 import {
@@ -13,8 +14,14 @@ import {
   Settings,
   ChevronDown,
 } from "lucide-react";
-import { SidebarLink } from "@/types";
+import { SidebarLink } from "@/types"; // Make sure SidebarLink type is defined correctly
 
+// Import the new modular components
+import ActivityButton from "./ActivityButton";
+import ExplorerLink from "./ExplorerLink";
+
+// Define these arrays outside the component if they are truly static and don't depend on props/state
+// This is a minor optimization, but good practice for static data.
 const activityBarLinks = [
   { name: "Explorer", icon: Files },
   { name: "Search", icon: Search },
@@ -31,6 +38,10 @@ const explorerLinks: SidebarLink[] = [
 export default function Sidebar() {
   const [activeView, setActiveView] = useState("Explorer");
 
+  const handleActivityButtonClick = (name: string) => {
+    setActiveView(name);
+  };
+
   return (
     <div className="flex h-screen bg-black text-gray-100 border-r-2 border-slate-500/50">
       {/* 1. Activity Bar */}
@@ -41,30 +52,29 @@ export default function Sidebar() {
       >
         <div className="flex flex-col gap-2">
           {activityBarLinks.map((link) => (
-            <button
+            <ActivityButton
               key={link.name}
-              onClick={() => setActiveView(link.name)}
-              className={`relative flex items-center justify-center p-3 rounded-lg transition-colors duration-200 ${
-                activeView === link.name
-                  ? "text-white"
-                  : "text-slate-400 hover:text-white hover:bg-slate-700/40"
-              }`}
-              aria-label={link.name}
-            >
-              {activeView === link.name && (
-                <span className="absolute left-0 h-6 w-0.5 bg-sky-500 rounded-r-full"></span>
-              )}
-              <link.icon size={24} strokeWidth={1.5} />
-            </button>
+              name={link.name}
+              Icon={link.icon}
+              isActive={activeView === link.name}
+              onClick={handleActivityButtonClick}
+            />
           ))}
         </div>
         <div className="flex flex-col gap-2">
-          <button className="p-3 text-slate-400 hover:text-blue-300 transition-colors duration-200">
-            <UserCircle size={24} strokeWidth={1.5} />
-          </button>
-          <button className="p-3 text-slate-400 hover:text-blue-300 transition-colors duration-200">
-            <Settings size={24} strokeWidth={1.5} />
-          </button>
+          {/* These can also use SidebarActivityButton if their click logic is similar */}
+          <ActivityButton
+            name="User"
+            Icon={UserCircle}
+            isActive={false} // Adjust if this button can be "active"
+            onClick={() => console.log("User Circle clicked")}
+          />
+          <ActivityButton
+            name="Settings"
+            Icon={Settings}
+            isActive={false} // Adjust if this button can be "active"
+            onClick={() => console.log("Settings clicked")}
+          />
         </div>
       </aside>
 
@@ -87,19 +97,13 @@ export default function Sidebar() {
             <nav className="mt-1">
               <ul>
                 {explorerLinks.map((link) => (
-                  <li key={link.name}>
-                    <a
-                      href={link.href}
-                      className={`flex items-center gap-2 w-full px-2 py-2 rounded-md text-sm transition-colors duration-200 ${
-                        link.name === "My Drive"
-                          ? "bg-sky-600/30 text-white"
-                          : "text-slate-300 hover:bg-slate-700/40 hover:text-white"
-                      }`}
-                    >
-                      <link.icon size={16} strokeWidth={1.5} />
-                      {link.name}
-                    </a>
-                  </li>
+                  <ExplorerLink
+                    key={link.name}
+                    name={link.name}
+                    href={link.href}
+                    Icon={link.icon}
+                    isActive={link.name === "My Drive"} // Example: 'My Drive' is active by default
+                  />
                 ))}
               </ul>
             </nav>

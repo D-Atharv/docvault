@@ -51,3 +51,8 @@ export type Account = {
   email: string;
   avatar: string;
 };
+
+export type CustomDateRange = {
+  after: string | null; // ISO date string "YYYY-MM-DD" or null
+  before: string | null; // ISO date string "YYYY-MM-DD" or null
+};

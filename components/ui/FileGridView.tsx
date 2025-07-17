@@ -1,3 +1,4 @@
+//server component
 import { DriveItem, FileType } from "@/types"; // Import FileType
 import {
   Folder,
