@@ -1,19 +1,20 @@
-import { LucideIcon } from "lucide-react";
+// types/index.ts
 
+// Define the types for file filtering
 export type FileType =
   | "All"
   | "Folders"
   | "Documents"
   | "Spreadsheets"
   | "Presentations"
-  | "Vids"
   | "Forms"
   | "Photos & images"
   | "PDFs"
+  | "Vids"
   | "Videos"
-  | "Archives (zip)"
   | "Audio"
   | "Drawings"
+  | "Archives (zip)"
   | "Sites"
   | "Shortcuts";
 
@@ -26,33 +27,28 @@ export type ModifiedFilterType =
   | "Last year (2024)"
   | "Custom date range";
 
-// New type to categorize the filter
-export type FilterCategory = "Type" | "Modified" | "People"; // 'People' is also a potential category
+// Define the type for filter categories
+export type FilterCategory = "Type" | "Modified" | "People";
 
-// Existing DriveItem definition (copy from previous response)
-export type DriveItem = {
+// Define the structure for a custom date range
+export interface CustomDateRange {
+  after: string | null;
+  before: string | null;
+}
+
+// Define the main structure for a drive item
+export interface DriveItem {
   id: string;
   name: string;
   type: FileType;
   owner: string;
   dateModified: string;
   fileSize?: string;
-};
-
-// Existing SidebarLink and Account definitions (copy from previous response)
-export type SidebarLink = {
-  name: string;
-  href: string;
-  icon: LucideIcon;
-};
+  parentId: string | null; // <-- NEW: To establish folder hierarchy
+}
 
 export type Account = {
   name: string;
   email: string;
   avatar: string;
-};
-
-export type CustomDateRange = {
-  after: string | null; // ISO date string "YYYY-MM-DD" or null
-  before: string | null; // ISO date string "YYYY-MM-DD" or null
 };

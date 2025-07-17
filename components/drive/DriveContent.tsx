@@ -1,21 +1,30 @@
 "use client";
 
-import { useState } from "react";
-import { driveItems } from "@/lib/mock-data";
+import { useEffect, useState } from "react";
 import { ChevronDown, List, LayoutGrid, Info } from "lucide-react";
 import Pagination from "../layout/Pagination";
 import { useDriveFilters } from "@/hooks/drive_content/useDriveFilters";
 import { useDriveSorting } from "@/hooks/drive_content/useDriveSorting";
 import { useDrivePagination } from "@/hooks/drive_content/useDrivePagination";
-import { FileType, ModifiedFilterType, CustomDateRange } from "@/types";
+import {
+  DriveItem,
+  FileType,
+  ModifiedFilterType,
+  CustomDateRange,
+} from "@/types";
 import FilterDropdown from "./filter_dropdown/FilterDropDown";
 import FileTable from "./file_table/FileTable";
 import FileGridView from "./file_grid/FileGridView";
 
-export default function DriveContent() {
+interface DriveContentProps {
+  initialItems: DriveItem[];
+  initialView: "grid" | "table";
+}
+
+export default function DriveContent({ initialItems,initialView }: DriveContentProps) {
   const ITEMS_PER_PAGE = 15;
 
-  // 1. Use Filtering Hook
+  // Filtering
   const {
     selectedType,
     selectedModified,
@@ -26,13 +35,13 @@ export default function DriveContent() {
     handleTypeChange,
     handleModifiedChange,
     setCustomDateRange,
-  } = useDriveFilters(driveItems);
+  } = useDriveFilters(initialItems);
 
-  // 2. Use Sorting Hook
+  // Sorting
   const { sortedItems, sortConfig, requestSort } =
     useDriveSorting(filteredItems);
 
-  // 3. Use Pagination Hook
+  // Pagination
   const {
     currentPage,
     paginatedItems,
@@ -41,7 +50,18 @@ export default function DriveContent() {
     setCurrentPage,
   } = useDrivePagination(sortedItems, ITEMS_PER_PAGE);
 
-  // Adjust handlers to also reset pagination when filter/sort changes
+  // === View mode state (Fixing the jerky behavior)
+  //  const [view, setView] = useState<"grid" | "table">(initialView); // Start with SSR-matched view
+    const [view, setView] = useState<"grid" | "table" | null>(initialView);
+
+
+   const updateView = (newView: "grid" | "table") => {
+     setView(newView);
+     const url = new URL(window.location.href);
+     url.searchParams.set("view", newView);
+     window.history.replaceState(null, "", url.toString());
+   };
+
   const onTypeChange = (option: FileType | ModifiedFilterType | string) => {
     handleTypeChange(option as FileType);
     setCurrentPage(1);
@@ -52,21 +72,15 @@ export default function DriveContent() {
     setCurrentPage(1);
   };
 
-  // NEW: Handler for when "Apply" is clicked in the custom date range within FilterDropdown
   const onApplyCustomDateRange = (range: CustomDateRange) => {
-    setCustomDateRange(range); // Update the custom date range state in the hook
-    // The handleModifiedChange will be called internally by FilterDropdown's handleApplyCustomDates
-    // to set selectedModified to "Custom date range", which then triggers filteredItems update.
-    setCurrentPage(1); // Reset pagination
+    setCustomDateRange(range);
+    setCurrentPage(1);
   };
 
-  // NEW: Handler for "Clear all" button in custom date range
   const onClearAllFilters = () => {
-    // Reset all filters
-    onTypeChange("All"); // Reset type filter
-    onModifiedChange("Any time"); // Reset modified filter (this also clears customDateRange in useDriveFilters)
-    // Add logic to clear other filters like "People" if they existed
-    setCurrentPage(1); // Reset pagination
+    onTypeChange("All");
+    onModifiedChange("Any time");
+    setCurrentPage(1);
   };
 
   const onRequestSort = (key: Parameters<typeof requestSort>[0]) => {
@@ -74,11 +88,12 @@ export default function DriveContent() {
     setCurrentPage(1);
   };
 
-  const [view, setView] = useState<"grid" | "table">("grid");
+  // Don't render anything until view is determined (to avoid flicker)
+  if (view === null) return null;
 
   return (
     <main className="flex flex-1 flex-col text-slate-100 bg-slate-700/10">
-      {/* --- Header --- */}
+      {/* Header */}
       <div className="px-6 pt-6 flex-shrink-0 relative z-10">
         <div className="flex justify-between items-center pb-4 border-b border-slate-600">
           <h1 className="text-2xl flex items-center gap-2 font-semibold">
@@ -87,7 +102,7 @@ export default function DriveContent() {
           <div className="flex items-center gap-2">
             <div className="flex items-center p-1 bg-slate-400/5 backdrop-blur-md border border-slate-500/20 rounded-lg">
               <button
-                onClick={() => setView("table")}
+                onClick={() => updateView("table")}
                 className={`p-1.5 rounded-md transition-all ${
                   view === "table"
                     ? "bg-blue-500/60 text-white shadow-md"
@@ -97,7 +112,7 @@ export default function DriveContent() {
                 <List size={20} />
               </button>
               <button
-                onClick={() => setView("grid")}
+                onClick={() => updateView("grid")}
                 className={`p-1.5 rounded-md transition-all ${
                   view === "grid"
                     ? "bg-blue-500/60 text-white shadow-md"
@@ -112,6 +127,7 @@ export default function DriveContent() {
             </button>
           </div>
         </div>
+
         {view === "table" && (
           <div className="flex items-center gap-3 py-3">
             <FilterDropdown
@@ -125,26 +141,29 @@ export default function DriveContent() {
               options={modifiedFilterOptions}
               selectedOption={selectedModified}
               onSelect={onModifiedChange}
-              customDateRange={customDateRange} // NEW: Pass custom date range state
-              onApplyCustomDateRange={onApplyCustomDateRange} // NEW: Pass apply handler
-              onClearAll={onClearAllFilters} // NEW: Pass clear all handler
+              customDateRange={customDateRange}
+              onApplyCustomDateRange={onApplyCustomDateRange}
+              onClearAll={onClearAllFilters}
             />
           </div>
         )}
       </div>
 
+      {/* Content */}
       <div className="flex-1 px-6 pt-0 overflow-y-auto scrollbar-custom">
         {view === "grid" ? (
-          <FileGridView items={paginatedItems} />
+          <FileGridView items={paginatedItems} view={view} />
         ) : (
           <FileTable
             items={paginatedItems}
             onSort={onRequestSort}
             sortConfig={sortConfig}
+            view={view}
           />
         )}
       </div>
 
+      {/* Pagination */}
       <div className="px-6 mb-4 flex-shrink-0 relative z-10 border-t border-slate-600/50 pt-4">
         <Pagination
           currentPage={currentPage}

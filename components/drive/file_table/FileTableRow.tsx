@@ -1,8 +1,8 @@
-// components/ui/file_table/FileTableRow.tsx
 "use client";
 
-import React from "react"; // Explicitly import React
-import { DriveItem, FileType } from "@/types"; // Import types
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { DriveItem, FileType } from "@/types";
 import {
   Folder,
   FileText,
@@ -15,11 +15,10 @@ import {
   FileArchive,
   Music,
   PencilRuler,
-  Link,
+  Link as LinkIcon,
   LayoutList,
 } from "lucide-react";
 
-// Helper function to get the Lucide icon for each file type (moved here)
 const getTypeIconForTable = (type: FileType) => {
   switch (type) {
     case "Folders":
@@ -30,7 +29,6 @@ const getTypeIconForTable = (type: FileType) => {
       return FileSpreadsheet;
     case "Presentations":
       return FileBadge;
-    case "Vids":
     case "Videos":
       return FileVideo;
     case "Forms":
@@ -48,9 +46,9 @@ const getTypeIconForTable = (type: FileType) => {
     case "Sites":
       return LayoutList;
     case "Shortcuts":
-      return Link;
+      return LinkIcon;
     default:
-      return FileText; // Fallback
+      return FileText;
   }
 };
 
@@ -61,12 +59,33 @@ interface FileTableRowProps {
 export default function FileTableRow({ item }: FileTableRowProps) {
   const Icon = getTypeIconForTable(item.type);
 
+  const [clientHref, setClientHref] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (item.type === "Folders") {
+      const params = new URLSearchParams(window.location.search);
+      if (!params.get("view")) params.set("view", "grid");
+      setClientHref(`/drive/${item.id}?${params.toString()}`);
+    }
+  }, [item]);
+
   return (
     <tr className="border-b border-slate-500/20 hover:bg-slate-700/30 group transition">
-      {/* Ensure no extra whitespace between <td> tags on the same line */}
-      <td className="p-3 flex items-center gap-3 text-slate-100">
-        <Icon className="text-blue-300" />
-        <span>{item.name}</span>
+      <td className="p-3 text-slate-100">
+        {item.type === "Folders" && clientHref ? (
+          <Link
+            href={clientHref}
+            className="flex items-center gap-3 hover:underline"
+          >
+            <Icon className="text-blue-300" />
+            <span>{item.name}</span>
+          </Link>
+        ) : (
+          <div className="flex items-center gap-3">
+            <Icon className="text-slate-400" />
+            <span>{item.name}</span>
+          </div>
+        )}
       </td>
       <td className="p-3 text-slate-300">{item.type}</td>
       <td className="p-3">

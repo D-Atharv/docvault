@@ -1,24 +1,23 @@
-// components/ui/FileTable.tsx
-"use client"; // IMPORTANT: FileTable must be a Client Component
+"use client";
 
-import React from "react"; // Explicitly import React
-import { DriveItem } from "@/types"; // Only DriveItem type needed here
+import React from "react";
+import { DriveItem } from "@/types";
 import FileTableHeader from "./FileTableHeader";
 import FileTableRow from "./FileTableRow";
 
-// Import the new modular components
-
-
+// MODIFIED: The props interface now accepts `view`
 interface FileTableProps {
   items: DriveItem[];
   onSort: (key: keyof DriveItem) => void;
   sortConfig: { key: keyof DriveItem; direction: "asc" | "desc" };
+  view: "grid" | "table";
 }
 
 export default function FileTable({
   items,
   onSort,
   sortConfig,
+  view,
 }: FileTableProps) {
   const getSortDirection = (key: keyof DriveItem) =>
     sortConfig.key === key ? sortConfig.direction : undefined;
@@ -63,6 +62,7 @@ export default function FileTable({
         </thead>
         <tbody>
           {items.map((item) => (
+            // MODIFIED: Pass the view prop down to each row
             <FileTableRow key={item.id} item={item} />
           ))}
         </tbody>
