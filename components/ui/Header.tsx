@@ -25,6 +25,8 @@ export default function Header() {
           src="https://www.google.com/images/branding/product/2x/drive_2020q4_48dp.png"
           alt="Drive logo"
           className="h-10 w-10"
+          width={100}
+          height={100}
         />
         <span className="text-2xl text-zinc-300 ml-2">Drive</span>
       </div>
