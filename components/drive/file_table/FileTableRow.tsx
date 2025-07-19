@@ -10,9 +10,10 @@ import { FileText, MoreVertical, UserCircle } from "lucide-react";
 
 interface FileTableRowProps {
   item: DriveItem;
+  onFileDoubleClick: (item: DriveItem) => void; // 👈 Add prop
 }
 
-export default function FileTableRow({ item }: FileTableRowProps) {
+export default function FileTableRow({ item ,onFileDoubleClick}: FileTableRowProps) {
   const Icon = getFileIcon(item.type) ?? FileText;
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -21,7 +22,10 @@ export default function FileTableRow({ item }: FileTableRowProps) {
   const clientHref = getFolderHref(pathname, item, searchParams);
 
   return (
-    <tr className="border-b border-slate-500/20 hover:bg-slate-700/30 group transition">
+    <tr
+      className="border-b border-slate-500/20 hover:bg-slate-700/30 group transition"
+      onDoubleClick={() => onFileDoubleClick(item)} // 👈 Add event handler
+    >
       <td className="p-3 text-slate-100">
         {item.type === "Folders" && clientHref ? (
           <Link

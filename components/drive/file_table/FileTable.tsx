@@ -3,17 +3,20 @@ import FileTableHeader from "./FileTableHeader";
 import FileTableRow from "./FileTableRow";
 
 // MODIFIED: The props interface now accepts `view`
+
 interface FileTableProps {
   items: DriveItem[];
   onSort: (key: keyof DriveItem) => void;
   sortConfig: { key: keyof DriveItem; direction: "asc" | "desc" };
   view: "grid" | "table";
+  onFileDoubleClick: (item: DriveItem) => void; // 👈 Add prop
 }
 
 export default function FileTable({
   items,
   onSort,
   sortConfig,
+  onFileDoubleClick,
 }: FileTableProps) {
   const getSortDirection = (key: keyof DriveItem) =>
     sortConfig.key === key ? sortConfig.direction : undefined;
@@ -59,7 +62,11 @@ export default function FileTable({
         <tbody>
           {items.map((item) => (
             // MODIFIED: Pass the view prop down to each row
-            <FileTableRow key={item.id} item={item} />
+            <FileTableRow
+              key={item.id}
+              item={item}
+              onFileDoubleClick={onFileDoubleClick} // 👈 Pass prop
+            />
           ))}
         </tbody>
       </table>

@@ -11,9 +11,10 @@ import { FileText } from "lucide-react";
 interface FileCardProps {
   item: DriveItem;
   view: "grid" | "table";
+  onFileDoubleClick: (item: DriveItem) => void; // 👈 Add prop
 }
 
-export default function FileCard({ item }: FileCardProps) {
+export default function FileCard({ item, onFileDoubleClick }: FileCardProps) {
   const Icon = getFileIcon(item.type) ?? FileText;
   const itemTypeDisplay =
     item.type === "Folders" ? "FOLDER" : item.type.toUpperCase();
@@ -25,7 +26,10 @@ export default function FileCard({ item }: FileCardProps) {
   const clientHref = getFolderHref(pathname, item, searchParams);
 
   const CardContent = (
-    <div className="group rounded-xl border border-slate-500/30 bg-slate-400/10 backdrop-blur-md text-gray-100 shadow-md transition-all hover:border-blue-500/40 hover:shadow-2xl hover:shadow-blue-800/30 h-full flex flex-col">
+    <div
+      className="group rounded-xl border border-slate-500/30 bg-slate-400/10 backdrop-blur-md text-gray-100 shadow-md transition-all hover:border-blue-500/40 hover:shadow-2xl hover:shadow-blue-800/30 h-full flex flex-col"
+      onDoubleClick={() => onFileDoubleClick(item)} // 👈 Add event handler
+    >
       <div className="p-4">
         <p className="font-mono text-sm text-slate-300">{itemTypeDisplay}</p>
       </div>

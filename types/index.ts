@@ -6,6 +6,7 @@ export type FileType =
   | "Folders"
   | "Documents"
   | "Spreadsheets"
+  | "xlsx"
   | "Presentations"
   | "Forms"
   | "Photos & images"
