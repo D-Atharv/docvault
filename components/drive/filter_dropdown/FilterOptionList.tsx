@@ -1,5 +1,4 @@
 // components/ui/filter_dropdown/FilterOptionsList.tsx
-"use client";
 import {
   ChevronRight,
   Folder,
@@ -16,7 +15,6 @@ import {
   LucideIcon,
 } from "lucide-react";
 import { FileType, ModifiedFilterType, FilterCategory } from "@/types";
-import React from "react"; // Explicitly import React
 
 interface FilterOptionsListProps {
   category: FilterCategory;
@@ -28,20 +26,35 @@ interface FilterOptionsListProps {
 // Helper to get the Lucide icon for individual type options (copied from FilterDropdown)
 const getTypeOptionIcon = (type: FileType) => {
   switch (type) {
-    case "Folders": return Folder;
-    case "Documents": return FileText;
-    case "Spreadsheets": return FileSpreadsheet;
-    case "Presentations": return FileBadge;
-    case "Vids": case "Videos": return FileVideo;
-    case "Forms": return FileText;
-    case "Photos & images": return ImageIcon;
-    case "PDFs": return FileText;
-    case "Archives (zip)": return FileArchive;
-    case "Audio": return Music;
-    case "Drawings": return PencilRuler;
-    case "Sites": return LayoutList;
-    case "Shortcuts": return Link;
-    default: return FileText;
+    case "Folders":
+      return Folder;
+    case "Documents":
+      return FileText;
+    case "Spreadsheets":
+      return FileSpreadsheet;
+    case "Presentations":
+      return FileBadge;
+    case "Vids":
+    case "Videos":
+      return FileVideo;
+    case "Forms":
+      return FileText;
+    case "Photos & images":
+      return ImageIcon;
+    case "PDFs":
+      return FileText;
+    case "Archives (zip)":
+      return FileArchive;
+    case "Audio":
+      return Music;
+    case "Drawings":
+      return PencilRuler;
+    case "Sites":
+      return LayoutList;
+    case "Shortcuts":
+      return Link;
+    default:
+      return FileText;
   }
 };
 

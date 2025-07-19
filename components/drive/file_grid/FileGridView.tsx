@@ -1,6 +1,3 @@
-
-"use client";
-
 import React from "react";
 import { DriveItem } from "@/types";
 import FileCard from "./FileCard";
@@ -16,7 +13,7 @@ export default function FileGridView({ items, view }: FileGridViewProps) {
     <div className="mt-6 grid gap-6 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
       {items.map((item) => (
         // MODIFIED: Pass the view prop down to each card
-        <FileCard key={item.id} item={item} view={view}/>
+        <FileCard key={item.id} item={item} view={view} />
       ))}
     </div>
   );

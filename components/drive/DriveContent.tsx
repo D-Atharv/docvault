@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ChevronDown, List, LayoutGrid, Info } from "lucide-react";
 import Pagination from "../layout/Pagination";
-import { useDriveFilters } from "@/hooks/drive_content/useDriveFilters";
-import { useDriveSorting } from "@/hooks/drive_content/useDriveSorting";
-import { useDrivePagination } from "@/hooks/drive_content/useDrivePagination";
+import {
+  useDriveFilters,
+  useDriveSorting,
+  useDrivePagination,
+} from "@/hooks/drive_content";
 import {
   DriveItem,
   FileType,
@@ -16,15 +19,33 @@ import FilterDropdown from "./filter_dropdown/FilterDropDown";
 import FileTable from "./file_table/FileTable";
 import FileGridView from "./file_grid/FileGridView";
 
+type ViewType = "grid" | "table";
+
 interface DriveContentProps {
   initialItems: DriveItem[];
-  initialView: "grid" | "table";
+  initialView: ViewType;
 }
 
-export default function DriveContent({ initialItems,initialView }: DriveContentProps) {
+export default function DriveContent({
+  initialItems,
+  initialView,
+}: DriveContentProps) {
   const ITEMS_PER_PAGE = 15;
 
-  // Filtering
+  const searchParams = useSearchParams();
+  const defaultView = (searchParams.get("view") as ViewType) ?? initialView;
+
+  const [view, setView] = useState<ViewType>(defaultView);
+
+  //  Function to update view & sync URL param
+  const updateView = useCallback((newView: ViewType) => {
+    setView(newView);
+    const url = new URL(window.location.href);
+    url.searchParams.set("view", newView);
+    window.history.replaceState(null, "", url.toString());
+  }, []);
+
+  //  Filters
   const {
     selectedType,
     selectedModified,
@@ -37,11 +58,11 @@ export default function DriveContent({ initialItems,initialView }: DriveContentP
     setCustomDateRange,
   } = useDriveFilters(initialItems);
 
-  // Sorting
+  //  Sorting
   const { sortedItems, sortConfig, requestSort } =
     useDriveSorting(filteredItems);
 
-  // Pagination
+  //  Pagination
   const {
     currentPage,
     paginatedItems,
@@ -50,46 +71,30 @@ export default function DriveContent({ initialItems,initialView }: DriveContentP
     setCurrentPage,
   } = useDrivePagination(sortedItems, ITEMS_PER_PAGE);
 
-  // === View mode state (Fixing the jerky behavior)
-  //  const [view, setView] = useState<"grid" | "table">(initialView); // Start with SSR-matched view
-    const [view, setView] = useState<"grid" | "table" | null>(initialView);
-
-
-   const updateView = (newView: "grid" | "table") => {
-     setView(newView);
-     const url = new URL(window.location.href);
-     url.searchParams.set("view", newView);
-     window.history.replaceState(null, "", url.toString());
-   };
-
-  const onTypeChange = (option: FileType | ModifiedFilterType | string) => {
-    handleTypeChange(option as FileType);
+  //  Clear page + update filters/sorting helpers
+  const resetPageAnd = (action: () => void) => {
+    action();
     setCurrentPage(1);
   };
 
-  const onModifiedChange = (option: FileType | ModifiedFilterType | string) => {
-    handleModifiedChange(option as ModifiedFilterType);
-    setCurrentPage(1);
-  };
+  const onTypeChange = (option: FileType | ModifiedFilterType | string) =>
+    resetPageAnd(() => handleTypeChange(option as FileType));
 
-  const onApplyCustomDateRange = (range: CustomDateRange) => {
-    setCustomDateRange(range);
-    setCurrentPage(1);
-  };
+  const onModifiedChange = (option: FileType | ModifiedFilterType | string) =>
+    resetPageAnd(() => handleModifiedChange(option as ModifiedFilterType));
+
+  const onApplyCustomDateRange = (range: CustomDateRange) =>
+    resetPageAnd(() => setCustomDateRange(range));
 
   const onClearAllFilters = () => {
-    onTypeChange("All");
-    onModifiedChange("Any time");
-    setCurrentPage(1);
+    resetPageAnd(() => {
+      handleTypeChange("All");
+      handleModifiedChange("Any time");
+    });
   };
 
-  const onRequestSort = (key: Parameters<typeof requestSort>[0]) => {
-    requestSort(key);
-    setCurrentPage(1);
-  };
-
-  // Don't render anything until view is determined (to avoid flicker)
-  if (view === null) return null;
+  const onRequestSort = (key: Parameters<typeof requestSort>[0]) =>
+    resetPageAnd(() => requestSort(key));
 
   return (
     <main className="flex flex-1 flex-col text-slate-100 bg-slate-700/10">
@@ -99,28 +104,27 @@ export default function DriveContent({ initialItems,initialView }: DriveContentP
           <h1 className="text-2xl flex items-center gap-2 font-semibold">
             My Drive <ChevronDown size={20} />
           </h1>
+
+          {/* View switcher + Info button */}
           <div className="flex items-center gap-2">
             <div className="flex items-center p-1 bg-slate-400/5 backdrop-blur-md border border-slate-500/20 rounded-lg">
-              <button
-                onClick={() => updateView("table")}
-                className={`p-1.5 rounded-md transition-all ${
-                  view === "table"
-                    ? "bg-blue-500/60 text-white shadow-md"
-                    : "text-slate-300 hover:text-white"
-                }`}
-              >
-                <List size={20} />
-              </button>
-              <button
-                onClick={() => updateView("grid")}
-                className={`p-1.5 rounded-md transition-all ${
-                  view === "grid"
-                    ? "bg-blue-500/60 text-white shadow-md"
-                    : "text-slate-300 hover:text-white"
-                }`}
-              >
-                <LayoutGrid size={20} />
-              </button>
+              {(["table", "grid"] as ViewType[]).map((v) => {
+                const Icon = v === "table" ? List : LayoutGrid;
+                const isActive = view === v;
+                return (
+                  <button
+                    key={v}
+                    onClick={() => updateView(v)}
+                    className={`p-1.5 rounded-md transition-all ${
+                      isActive
+                        ? "bg-blue-500/60 text-white shadow-md"
+                        : "text-slate-300 hover:text-white"
+                    }`}
+                  >
+                    <Icon size={20} />
+                  </button>
+                );
+              })}
             </div>
             <button className="p-2 rounded-full text-slate-300 hover:bg-slate-700/40">
               <Info size={20} />
@@ -128,6 +132,7 @@ export default function DriveContent({ initialItems,initialView }: DriveContentP
           </div>
         </div>
 
+        {/* Filters (table view only) */}
         {view === "table" && (
           <div className="flex items-center gap-3 py-3">
             <FilterDropdown

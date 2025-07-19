@@ -1,7 +1,4 @@
 // components/ui/file_table/FileTableHeader.tsx
-"use client";
-
-import React from "react"; // Explicitly import React
 import { ArrowUp, ArrowDown } from "lucide-react"; // Icons used in header
 
 interface FileTableHeaderProps {

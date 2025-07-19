@@ -1,6 +1,3 @@
-"use client";
-
-import React from "react";
 import { DriveItem } from "@/types";
 import FileTableHeader from "./FileTableHeader";
 import FileTableRow from "./FileTableRow";
@@ -17,7 +14,6 @@ export default function FileTable({
   items,
   onSort,
   sortConfig,
-  view,
 }: FileTableProps) {
   const getSortDirection = (key: keyof DriveItem) =>
     sortConfig.key === key ? sortConfig.direction : undefined;

@@ -1,54 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
-import { DriveItem, FileType } from "@/types";
-import {
-  Folder,
-  FileText,
-  FileSpreadsheet,
-  FileBadge,
-  FileVideo,
-  Image as ImageIcon,
-  FileArchive,
-  Music,
-  PencilRuler,
-  LayoutList,
-  Link as LinkIcon,
-} from "lucide-react";
-
-const getFileIcon = (type: FileType) => {
-  switch (type) {
-    case "Folders":
-      return Folder;
-    case "Documents":
-      return FileText;
-    case "Spreadsheets":
-      return FileSpreadsheet;
-    case "Presentations":
-      return FileBadge;
-    case "Videos":
-      return FileVideo;
-    case "Forms":
-      return FileText;
-    case "Photos & images":
-      return ImageIcon;
-    case "PDFs":
-      return FileText;
-    case "Archives (zip)":
-      return FileArchive;
-    case "Audio":
-      return Music;
-    case "Drawings":
-      return PencilRuler;
-    case "Sites":
-      return LayoutList;
-    case "Shortcuts":
-      return LinkIcon;
-    default:
-      return FileText;
-  }
-};
+import { useSearchParams } from "next/navigation";
+import { DriveItem } from "@/types";
+import { getFileIcon } from "@/lib/file_icon";
+import { getFolderHref } from "@/lib/get_folder_href";
+import { FileText } from "lucide-react";
 
 interface FileCardProps {
   item: DriveItem;
@@ -56,21 +14,15 @@ interface FileCardProps {
 }
 
 export default function FileCard({ item }: FileCardProps) {
-  const Icon = getFileIcon(item.type);
+  const Icon = getFileIcon(item.type) ?? FileText;
   const itemTypeDisplay =
     item.type === "Folders" ? "FOLDER" : item.type.toUpperCase();
 
-  const [clientHref, setClientHref] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (item.type === "Folders") {
-      const params = new URLSearchParams(window.location.search);
-      if (!params.get("view")) {
-        params.set("view", "grid");
-      }
-      setClientHref(`/drive/${item.id}?${params.toString()}`);
-    }
-  }, [item]);
+  const searchParams = useSearchParams();
+  const clientHref = useMemo(
+    () => getFolderHref(item, searchParams),
+    [item, searchParams]
+  );
 
   const CardContent = (
     <div className="group rounded-xl border border-slate-500/30 bg-slate-400/10 backdrop-blur-md text-gray-100 shadow-md transition-all hover:border-blue-500/40 hover:shadow-2xl hover:shadow-blue-800/30 h-full flex flex-col">
@@ -93,7 +45,6 @@ export default function FileCard({ item }: FileCardProps) {
   );
 
   if (item.type === "Folders") {
-    // Prevent mismatch: render nothing until clientHref is ready
     return clientHref ? (
       <Link href={clientHref} className="no-underline">
         {CardContent}

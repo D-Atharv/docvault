@@ -1,73 +1,24 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
-import { DriveItem, FileType } from "@/types";
-import {
-  Folder,
-  FileText,
-  UserCircle,
-  MoreVertical,
-  FileSpreadsheet,
-  FileBadge,
-  FileVideo,
-  Image as ImageIcon,
-  FileArchive,
-  Music,
-  PencilRuler,
-  Link as LinkIcon,
-  LayoutList,
-} from "lucide-react";
-
-const getTypeIconForTable = (type: FileType) => {
-  switch (type) {
-    case "Folders":
-      return Folder;
-    case "Documents":
-      return FileText;
-    case "Spreadsheets":
-      return FileSpreadsheet;
-    case "Presentations":
-      return FileBadge;
-    case "Videos":
-      return FileVideo;
-    case "Forms":
-      return FileText;
-    case "Photos & images":
-      return ImageIcon;
-    case "PDFs":
-      return FileText;
-    case "Archives (zip)":
-      return FileArchive;
-    case "Audio":
-      return Music;
-    case "Drawings":
-      return PencilRuler;
-    case "Sites":
-      return LayoutList;
-    case "Shortcuts":
-      return LinkIcon;
-    default:
-      return FileText;
-  }
-};
+import { useSearchParams } from "next/navigation";
+import { DriveItem } from "@/types";
+import { getFileIcon } from "@/lib/file_icon";
+import { getFolderHref } from "@/lib/get_folder_href";
+import { FileText, MoreVertical, UserCircle } from "lucide-react";
 
 interface FileTableRowProps {
   item: DriveItem;
 }
 
 export default function FileTableRow({ item }: FileTableRowProps) {
-  const Icon = getTypeIconForTable(item.type);
-
-  const [clientHref, setClientHref] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (item.type === "Folders") {
-      const params = new URLSearchParams(window.location.search);
-      if (!params.get("view")) params.set("view", "grid");
-      setClientHref(`/drive/${item.id}?${params.toString()}`);
-    }
-  }, [item]);
+  const Icon = getFileIcon(item.type) ?? FileText;
+  const searchParams = useSearchParams();
+  const clientHref = useMemo(
+    () => getFolderHref(item, searchParams),
+    [item, searchParams]
+  );
 
   return (
     <tr className="border-b border-slate-500/20 hover:bg-slate-700/30 group transition">
