@@ -28,11 +28,14 @@ interface PageProps {
 export default async function FolderPage({ searchParams, params }: PageProps) {
   // 2. Await both props to get the resolved values
   // Using Promise.all is an efficient way to resolve multiple promises
-  const [resolvedSearchParams, _] = await Promise.all([searchParams, params]);
+  const [resolvedSearchParams, resolvedParams] = await Promise.all([
+    searchParams,
+    params,
+  ]);
 
   // 3. Use the resolved values
   const viewParam = resolvedSearchParams?.view === "table" ? "table" : "grid";
-  const folderId = params.slug?.[0] ?? null;
+  const folderId = resolvedParams.slug?.[0] || null;
 
   // You can now use your existing logic with the resolved folderId
   const folderContents = getFolderContents(folderId);
