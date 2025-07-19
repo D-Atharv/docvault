@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ChevronDown, List, LayoutGrid, Info } from "lucide-react";
+import {  List, LayoutGrid, Info } from "lucide-react";
 import Pagination from "../layout/Pagination";
 import {
   useDriveFilters,
@@ -18,17 +18,21 @@ import {
 import FilterDropdown from "./filter_dropdown/FilterDropDown";
 import FileTable from "./file_table/FileTable";
 import FileGridView from "./file_grid/FileGridView";
+import { Breadcrumb } from "@/lib/drive-utils";
+import Breadcrumbs from "../layout/BreadCrumbs";
 
 type ViewType = "grid" | "table";
 
 interface DriveContentProps {
   initialItems: DriveItem[];
   initialView: ViewType;
+  breadcrumbs: Breadcrumb[]; // Add breadcrumbs prop
 }
 
 export default function DriveContent({
   initialItems,
   initialView,
+  breadcrumbs, // Destructure breadcrumbs
 }: DriveContentProps) {
   const ITEMS_PER_PAGE = 15;
 
@@ -101,9 +105,10 @@ export default function DriveContent({
       {/* Header */}
       <div className="px-6 pt-6 flex-shrink-0 relative z-10">
         <div className="flex justify-between items-center pb-4 border-b border-slate-600">
-          <h1 className="text-2xl flex items-center gap-2 font-semibold">
+          {/* <h1 className="text-2xl flex items-center gap-2 font-semibold">
             My Drive <ChevronDown size={20} />
-          </h1>
+          </h1> */}
+          <Breadcrumbs breadcrumbs={breadcrumbs} />
 
           {/* View switcher + Info button */}
           <div className="flex items-center gap-2">
@@ -179,3 +184,4 @@ export default function DriveContent({
     </main>
   );
 }
+

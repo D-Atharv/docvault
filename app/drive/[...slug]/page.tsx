@@ -1,51 +1,58 @@
-// app/drive/[...slug]/page.tsx
 import DriveContent from "@/components/drive/DriveContent";
 import Header from "@/components/layout/Header";
 import RightSidebar from "@/components/layout/RightSidebar";
 import Sidebar from "@/components/layout/sidebar/Sidebar";
-import { driveItems } from "@/lib/mock-data";
-import { DriveItem } from "@/types";
-
-// Helper function to find items belonging to a specific folder
-const getFolderContents = (folderId: string | null): DriveItem[] => {
-  if (folderId === null) {
-    // Return root items
-    return driveItems.filter((item) => item.parentId === null);
-  }
-  return driveItems.filter((item) => item.parentId === folderId);
-};
+import {
+  findFolderAndGetBreadcrumbs,
+  getFolderContents,
+} from "@/lib/drive-utils";
+import { notFound } from "next/navigation";
 
 interface PageProps {
-  searchParams?: {
-    view?: string;
-  };
   params: {
     slug?: string[];
   };
+  searchParams?: {
+    view?: string;
+  };
 }
 
-// 1. Make the component an async function
-export default async function FolderPage({ searchParams, params }: PageProps) {
-  // 2. Await both props to get the resolved values
-  // Using Promise.all is an efficient way to resolve multiple promises
-  const [resolvedSearchParams, resolvedParams] = await Promise.all([
-    searchParams,
+export default async function FolderPage({ params, searchParams }: PageProps) {
+  // Await both promises to get the resolved values
+  const [resolvedParams, resolvedSearchParams] = await Promise.all([
     params,
+    searchParams,
   ]);
 
-  // 3. Use the resolved values
+  // Use the resolved values
+  const slug = resolvedParams.slug || [];
   const viewParam = resolvedSearchParams?.view === "table" ? "table" : "grid";
-  const folderId = resolvedParams.slug?.[0] || null;
 
-  // You can now use your existing logic with the resolved folderId
-  const folderContents = getFolderContents(folderId);
+  // Find the current folder and generate breadcrumbs from the full slug
+  const { currentFolder, breadcrumbs } = findFolderAndGetBreadcrumbs(slug);
+
+  // If the path is invalid, show a 404 page
+  if (breadcrumbs.length === 0 && slug.length > 0) {
+    // Check slug length to allow root drive
+    notFound();
+  }
+
+  // The ID of the current folder is the ID of the last item found
+  const currentFolderId = currentFolder?.id ?? null;
+
+  // Get the contents of this specific folder
+  const folderContents = getFolderContents(currentFolderId);
 
   return (
     <div className="flex flex-col h-screen">
       <Header />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <DriveContent initialItems={folderContents} initialView={viewParam} />
+        <DriveContent
+          initialItems={folderContents}
+          initialView={viewParam}
+          breadcrumbs={breadcrumbs} // Pass the breadcrumbs to the content area
+        />
         <RightSidebar />
       </div>
     </div>

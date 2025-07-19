@@ -13,8 +13,8 @@ import {
   UserCircle,
   Settings,
   ChevronDown,
+  LucideIcon,
 } from "lucide-react";
-import { SidebarLink } from "@/types"; // Make sure SidebarLink type is defined correctly
 
 // Import the new modular components
 import ActivityButton from "./ActivityButton";
@@ -30,10 +30,20 @@ const activityBarLinks = [
   { name: "Extensions", icon: Puzzle },
 ];
 
+type SidebarLink = {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+};
+
 const explorerLinks: SidebarLink[] = [
   { name: "Home", href: "#", icon: Home },
   { name: "My Drive", href: "#", icon: HardDrive },
 ];
+
+const usedStorage = 5.2; // in GB
+const totalStorage = 15; // in GB
+const usedPercentage = (usedStorage / totalStorage) * 100;
 
 export default function Sidebar() {
   const [activeView, setActiveView] = useState("Explorer");
@@ -107,6 +117,18 @@ export default function Sidebar() {
                 ))}
               </ul>
             </nav>
+            {/* Storage Usage Section */}
+            <div className="mt-auto px-2 pt-4 text-xs text-slate-400">
+              <div className="mb-1 font-medium">
+                {usedStorage.toFixed(1)} GB of {totalStorage} GB used
+              </div>
+              <div className="w-full h-2 bg-slate-700 rounded-md overflow-hidden">
+                <div
+                  className="h-full bg-sky-600 transition-all duration-300"
+                  style={{ width: `${usedPercentage}%` }}
+                ></div>
+              </div>
+            </div>
           </details>
         )}
       </aside>

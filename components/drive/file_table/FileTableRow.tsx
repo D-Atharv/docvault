@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { DriveItem } from "@/types";
 import { getFileIcon } from "@/lib/file_icon";
 import { getFolderHref } from "@/lib/get_folder_href";
@@ -14,11 +14,11 @@ interface FileTableRowProps {
 
 export default function FileTableRow({ item }: FileTableRowProps) {
   const Icon = getFileIcon(item.type) ?? FileText;
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const clientHref = useMemo(
-    () => getFolderHref(item, searchParams),
-    [item, searchParams]
-  );
+
+  // Dynamically build the nested href
+  const clientHref = getFolderHref(pathname, item, searchParams);
 
   return (
     <tr className="border-b border-slate-500/20 hover:bg-slate-700/30 group transition">
