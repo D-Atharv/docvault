@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Million Lint
 .million
+
+#react-pdf
+/public/pdf.worker.mjs

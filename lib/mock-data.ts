@@ -26,6 +26,8 @@ export const driveItems: DriveItem[] = [
     dateModified: "2025-07-10",
     fileSize: "5.2 MB",
     parentId: null,
+    url: "/sample.pdf", // ✨ Point to the PDF in your public folder
+
   },
   {
     id: "file-2",

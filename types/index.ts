@@ -37,6 +37,17 @@ export interface CustomDateRange {
   before: string | null;
 }
 
+// // Define the main structure for a drive item
+// export interface DriveItem {
+//   id: string;
+//   name: string;
+//   type: FileType;
+//   owner: string;
+//   dateModified: string;
+//   fileSize?: string;
+//   parentId: string | null; // <-- NEW: To establish folder hierarchy
+// }
+
 // Define the main structure for a drive item
 export interface DriveItem {
   id: string;
@@ -46,6 +57,7 @@ export interface DriveItem {
   dateModified: string;
   fileSize?: string;
   parentId: string | null; // <-- NEW: To establish folder hierarchy
+  url?: string; // ✨ Add this optional property
 }
 
 export type Account = {
