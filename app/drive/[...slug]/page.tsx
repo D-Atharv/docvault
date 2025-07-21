@@ -8,16 +8,13 @@ import {
 } from "@/lib/drive-utils";
 import { notFound } from "next/navigation";
 
-interface PageProps {
-  params: {
-    slug?: string[];
-  };
-  searchParams?: {
-    view?: string;
-  };
-}
-
-export default async function FolderPage({ params, searchParams }: PageProps) {
+export default async function FolderPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug?: string[] }>;
+  searchParams?: Promise<{ view?: string }>;
+}) {
   // Await both promises to get the resolved values
   const [resolvedParams, resolvedSearchParams] = await Promise.all([
     params,

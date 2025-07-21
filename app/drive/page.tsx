@@ -5,13 +5,12 @@ import Sidebar from "@/components/layout/sidebar/Sidebar";
 import { getFolderContents } from "@/lib/drive-utils";
 import { Breadcrumb } from "@/lib/drive-utils";
 
-interface PageProps {
-  searchParams?: {
-    view?: string;
-  };
-}
 
-export default async function RootDrivePage({ searchParams }: PageProps) {
+export default async function RootDrivePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ view?: string }>;
+}) {
   // Await the searchParams promise to get the resolved object
   const resolvedSearchParams = await searchParams;
 

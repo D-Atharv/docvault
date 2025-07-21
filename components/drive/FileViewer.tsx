@@ -30,19 +30,19 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose }) => {
   const Icon = getFileIcon(file.type);
 
   // Simple logic to determine if we can show a text-based preview
- const previewableTypes: FileType[] = [
-   "Documents",
-   "PDFs",
-   "Presentations",
-   "Spreadsheets",
-   "Photos & images",
-   "Drawings",
-   "Audio",
-   "Videos",
-   "xlsx" // or "Vids" depending on what you use consistently
- ];
+  const previewableTypes: FileType[] = [
+    "Documents",
+    "PDFs",
+    "Presentations",
+    "Spreadsheets",
+    "Photos & images",
+    "Drawings",
+    "Audio",
+    "Videos",
+    "xlsx", // or "Vids" depending on what you use consistently
+  ];
 
- const canShowPreview = previewableTypes.includes(file.type);
+  const canShowPreview = previewableTypes.includes(file.type);
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
@@ -84,7 +84,8 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose }) => {
               {Icon && <Icon size={80} className="mb-4 text-slate-500" />}
               <h2 className="text-xl font-semibold">No preview available</h2>
               <p>
-                Preview for '{file.name}' ({file.type}) is not supported.
+                Preview for &apos;{file.name}&apos; ({file.type}) is not
+                supported.
               </p>
             </div>
           )}
