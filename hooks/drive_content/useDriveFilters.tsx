@@ -24,7 +24,7 @@ export type FilterOptions = {
   modifiedFilterOptions: ModifiedFilterType[];
 };
 
-export const useDriveFilters = (items: DriveItem[]) => {
+export const useDriveFilters = (items: DriveItem[], p0: { initialType: "All" | "Folders" | "Images" | "Videos" | "Documents" | "Audio" | "PDFs" | undefined; initialModified: "Any time" | "Today" | "Last 7 days" | "Last 30 days" | "Last year" | "Custom range" | undefined; initialCustomRange: { start?: string | undefined; end?: string | undefined; } | undefined; }) => {
   const [selectedType, setSelectedType] = useState<FileType>("All");
   const [selectedModified, setSelectedModified] =
     useState<ModifiedFilterType>("Any time");

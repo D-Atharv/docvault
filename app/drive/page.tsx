@@ -1,10 +1,9 @@
-import DriveContent from "@/components/drive/DriveContent";
+import DriveContent from "@/components/drive/drive_content/DriveContent";
 import Header from "@/components/layout/Header";
 import RightSidebar from "@/components/layout/RightSidebar";
 import Sidebar from "@/components/layout/sidebar/Sidebar";
 import { getFolderContents } from "@/lib/drive-utils";
 import { Breadcrumb } from "@/lib/drive-utils";
-
 
 export default async function RootDrivePage({
   searchParams,
