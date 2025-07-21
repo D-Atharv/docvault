@@ -8,6 +8,7 @@ import {
   useDriveFilters,
   useDriveSorting,
   useDrivePagination,
+  useDriveSearch, // ✨ 1. Import the new search hook
 } from "@/hooks/drive_content";
 import {
   DriveItem,
@@ -21,38 +22,36 @@ import FileGridView from "./file_grid/FileGridView";
 import { Breadcrumb } from "@/lib/drive-utils";
 import Breadcrumbs from "../layout/BreadCrumbs";
 import FileViewer from "./FileViewer";
+import Tooltip from "../layout/Tooltip";
 
 type ViewType = "grid" | "table";
 
 interface DriveContentProps {
   initialItems: DriveItem[];
   initialView: ViewType;
-  breadcrumbs: Breadcrumb[]; // Add breadcrumbs prop
+  breadcrumbs: Breadcrumb[];
 }
 
 export default function DriveContent({
   initialItems,
   initialView,
-  breadcrumbs, // Destructure breadcrumbs
+  breadcrumbs,
 }: DriveContentProps) {
-  const ITEMS_PER_PAGE = 15;
+  const ITEMS_PER_PAGE = 12;
 
   const searchParams = useSearchParams();
   const defaultView = (searchParams.get("view") as ViewType) ?? initialView;
+  const searchQuery = searchParams.get("q") || ""; // ✨ 2. Get search query from URL
 
   const [view, setView] = useState<ViewType>(defaultView);
-
-  // ✨ --- START: New state and handler for file viewer --- ✨
   const [viewingFile, setViewingFile] = useState<DriveItem | null>(null);
 
   const handleOpenFile = useCallback((file: DriveItem) => {
-    // We only want to open previews for files, not navigate folders
     if (file.type !== "Folders") {
       setViewingFile(file);
     }
   }, []);
 
-  //  Function to update view & sync URL param
   const updateView = useCallback((newView: ViewType) => {
     setView(newView);
     const url = new URL(window.location.href);
@@ -60,7 +59,10 @@ export default function DriveContent({
     window.history.replaceState(null, "", url.toString());
   }, []);
 
-  //  Filters
+  // ✨ 3. Apply fuzzy search before other filters
+  const { searchedItems } = useDriveSearch(initialItems, searchQuery);
+
+  //  Filters (now uses searchedItems as its source)
   const {
     selectedType,
     selectedModified,
@@ -71,13 +73,13 @@ export default function DriveContent({
     handleTypeChange,
     handleModifiedChange,
     setCustomDateRange,
-  } = useDriveFilters(initialItems);
+  } = useDriveFilters(searchedItems); // ✨ 4. Pass searched items to the next hook
 
-  //  Sorting
+  //  Sorting (no change needed, it receives filteredItems)
   const { sortedItems, sortConfig, requestSort } =
     useDriveSorting(filteredItems);
 
-  //  Pagination
+  //  Pagination (no change needed, it receives sortedItems)
   const {
     currentPage,
     paginatedItems,
@@ -86,7 +88,6 @@ export default function DriveContent({
     setCurrentPage,
   } = useDrivePagination(sortedItems, ITEMS_PER_PAGE);
 
-  //  Clear page + update filters/sorting helpers
   const resetPageAnd = (action: () => void) => {
     action();
     setCurrentPage(1);
@@ -114,15 +115,9 @@ export default function DriveContent({
   return (
     <>
       <main className="flex flex-1 flex-col text-slate-100 bg-slate-700/10">
-        {/* Header */}
         <div className="px-6 pt-6 flex-shrink-0 relative z-10">
           <div className="flex justify-between items-center pb-4 border-b border-slate-600">
-            {/* <h1 className="text-2xl flex items-center gap-2 font-semibold">
-            My Drive <ChevronDown size={20} />
-          </h1> */}
             <Breadcrumbs breadcrumbs={breadcrumbs} />
-
-            {/* View switcher + Info button */}
             <div className="flex items-center gap-2">
               <div className="flex items-center p-1 bg-slate-400/5 backdrop-blur-md border border-slate-500/20 rounded-lg">
                 {(["table", "grid"] as ViewType[]).map((v) => {
@@ -143,13 +138,13 @@ export default function DriveContent({
                   );
                 })}
               </div>
-              <button className="p-2 rounded-full text-slate-300 hover:bg-slate-700/40">
-                <Info size={20} />
-              </button>
+              <Tooltip text="Details" position="bottom">
+                <button className="p-2 rounded-full text-slate-300 hover:bg-slate-700/40">
+                  <Info size={20} />
+                </button>
+              </Tooltip>
             </div>
           </div>
-
-          {/* Filters (table view only) */}
           {view === "table" && (
             <div className="flex items-center gap-3 py-3">
               <FilterDropdown
@@ -170,14 +165,12 @@ export default function DriveContent({
             </div>
           )}
         </div>
-
-        {/* Content */}
         <div className="flex-1 px-6 pt-0 overflow-y-auto scrollbar-custom">
           {view === "grid" ? (
             <FileGridView
               items={paginatedItems}
               view={view}
-              onFileDoubleClick={handleOpenFile} // 👈 Pass handler
+              onFileDoubleClick={handleOpenFile}
             />
           ) : (
             <FileTable
@@ -185,13 +178,11 @@ export default function DriveContent({
               onSort={onRequestSort}
               sortConfig={sortConfig}
               view={view}
-              onFileDoubleClick={handleOpenFile} // 👈 Pass handler
+              onFileDoubleClick={handleOpenFile}
             />
           )}
         </div>
-
-        {/* Pagination */}
-        <div className="px-6 mb-4 flex-shrink-0 relative z-10 border-t border-slate-600/50 pt-4">
+        <div className="px-6 mb-4 flex-shrink-0 relative z-10 border-t border-slate-600/50 pt-2">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -205,4 +196,3 @@ export default function DriveContent({
     </>
   );
 }
-

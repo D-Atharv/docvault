@@ -9,7 +9,7 @@ export default function Pagination({
   totalPages: number;
   onPageChange: (page: number) => void;
 }) {
-  if (totalPages <= 1) return null;
+  if (totalPages === 0) return null;
 
   const getPagesToShow = () => {
     const pages = new Set<number>();
