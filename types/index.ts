@@ -1,10 +1,10 @@
 // types/index.ts
 
-// Define the types for file filtering
 export type FileType =
   | "All"
   | "Folders"
   | "Documents"
+  | "Code" 
   | "Spreadsheets"
   | "xlsx"
   | "Presentations"
@@ -36,17 +36,6 @@ export interface CustomDateRange {
   after: string | null;
   before: string | null;
 }
-
-// // Define the main structure for a drive item
-// export interface DriveItem {
-//   id: string;
-//   name: string;
-//   type: FileType;
-//   owner: string;
-//   dateModified: string;
-//   fileSize?: string;
-//   parentId: string | null; // <-- NEW: To establish folder hierarchy
-// }
 
 // Define the main structure for a drive item
 export interface DriveItem {

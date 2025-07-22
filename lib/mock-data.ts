@@ -31,12 +31,13 @@ export const driveItems: DriveItem[] = [
   },
   {
     id: "file-2",
-    name: "Onboarding Video.mp4",
-    type: "Videos",
+    name: "code.py",
+    type: "Code",
     owner: "Charlie",
     dateModified: "2025-05-01",
     fileSize: "128 MB",
     parentId: null,
+    url: "/code.py"
   },
 
   // --- Items inside "Project Alpha" (parentId: "folder-1") ---
