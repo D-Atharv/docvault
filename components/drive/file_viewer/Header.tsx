@@ -7,7 +7,6 @@ import {
   Minimize,
   Maximize,
   Download,
-  Info,
   X,
   Save, // ✨ Import Save Icon
 } from "lucide-react";
@@ -22,7 +21,6 @@ export const FileViewerHeader = memo(function FileViewerHeader({
   hasChanges,       // ✨ New prop
   onToggleFullscreen,
   onDownload,
-  onInfo,
   onClose,
   onSave,           // ✨ New prop
 }: {
