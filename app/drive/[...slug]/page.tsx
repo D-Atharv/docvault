@@ -2,6 +2,7 @@ import DriveContent from "@/components/drive/drive_content/DriveContent";
 import Header from "@/components/layout/Header";
 import RightSidebar from "@/components/layout/RightSidebar";
 import Sidebar from "@/components/layout/sidebar/Sidebar";
+import MobileOnlyPlaceholder from "@/components/ui/MobileOnlyView";
 import {
   findFolderAndGetBreadcrumbs,
   getFolderContents,
@@ -41,17 +42,25 @@ export default async function FolderPage({
   const folderContents = getFolderContents(currentFolderId);
 
   return (
-    <div className="flex flex-col h-screen">
-      <Header />
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
-        <DriveContent
-          initialItems={folderContents}
-          initialView={viewParam}
-          breadcrumbs={breadcrumbs} // Pass the breadcrumbs to the content area
-        />
-        <RightSidebar />
+    <>
+      {/* Mobile view */}
+      <div className="flex lg:hidden h-screen overflow-hidden w-screen">
+        <MobileOnlyPlaceholder />
       </div>
-    </div>
+
+      {/* Desktop view */}
+      <div className="hidden lg:flex flex-col h-screen">
+        <Header />
+        <div className="flex flex-1 overflow-hidden">
+          <Sidebar />
+          <DriveContent
+            initialItems={folderContents}
+            initialView={viewParam}
+            breadcrumbs={breadcrumbs}
+          />
+          <RightSidebar />
+        </div>
+      </div>
+    </>
   );
 }
